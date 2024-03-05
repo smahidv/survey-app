@@ -48,6 +48,14 @@ class AuthController extends Controller
     ]);
 }
 
+//return authorized user info
+   public function me(Request $request)
+   {
+    // user() is a helper function that retrieves the currently authenticated user instance.
+     return $request ->user();
+    //  This method will return the user(serialized to JSON) object if the request is authenticated, or null otherwise.
+   
+   }
   public function logout(Request $request)
   {
     /** @var User $user */

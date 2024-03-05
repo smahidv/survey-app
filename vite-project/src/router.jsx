@@ -16,6 +16,7 @@ const router = createBrowserRouter([
                 path: "/dashboard",
                 element: <Navigate to="/" />,
             },
+            // if a user navigates to "/dashboard," they would be immediately redirected to the root path
             {
                 path: "/",
                 element: <Dashboard />,

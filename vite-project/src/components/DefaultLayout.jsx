@@ -4,6 +4,7 @@ import { Bars3Icon, UserIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { NavLink, Navigate, Outlet } from "react-router-dom";
 import { userStateContext } from "../contexts/ContextProvider";
 import axiosClient from "../views/axios";
+import { useEffect } from "react";
 
 const navigation = [
     { name: "Dashboard", to: "/" },
@@ -29,6 +30,13 @@ export default function DefaultLayout() {
             setUserToken(null);
         });
     };
+    useEffect(() => {
+            axiosClient
+            .get("/me")
+            .then(({data})=>{
+                setCurrentUser(data);
+            })
+    }, []);
     return (
         <>
             <div className="min-h-full">
@@ -49,6 +57,7 @@ export default function DefaultLayout() {
                                             <div className="ml-10 flex items-baseline space-x-4">
                                                 {navigation.map((item) => (
                                                     <NavLink
+        
                                                         key={item.name}
                                                         to={item.to}
                                                         className={({

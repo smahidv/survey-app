@@ -13,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Enum;
 use App\Enums\QuestionTypeEnum;
+use Illuminate\Support\Str;
 
 class SurveyController extends Controller
 {
@@ -24,7 +25,7 @@ class SurveyController extends Controller
 
     // this method is meant to fetch and return surveys associated with 
     //the authenticated user, ordered by creation date in descending order, 
-    //and paginated with 10 surveys per page.
+    //and paginated with 3 surveys per page.
     public function index(Request $request)
     {
         $user = $request->user();
@@ -32,6 +33,8 @@ class SurveyController extends Controller
             Survey::where("user_id", $user->id)
                 ->orderBy("created_at", "desc")
                 ->paginate(2)
+
+                //on the response we have the data / links of pages / meta that contain the data on the next pages 
         );
     }
 
@@ -45,7 +48,7 @@ class SurveyController extends Controller
         // print_r($data);
 
         //check if image was given and save on local file system
-        if (isset($data["image"])) {
+        if (isset($data['image'])) {
             $relativePath = $this->saveImage($data['image']);
             $data['image'] = $relativePath;
         }
@@ -53,9 +56,10 @@ class SurveyController extends Controller
         $survey = Survey::create($data);
 
         foreach ($data['questions'] as $question) {
+// This associates the question with a survey by storing the survey's id in the question
             $question['survey_id'] = $survey->id;
             $this->createQuestion($question);
-        }
+        }   
         return new SurveyResource($survey);
     }
 
@@ -154,7 +158,7 @@ class SurveyController extends Controller
             }
 
             // Replace any whitespace characters in the base64 data
-            $image = str_replace('', '+', $image);
+            $image = str_replace(' ', '+', $image);
 
             // Decode the base64 data into binary image data
             $image = base64_decode($image);
@@ -166,7 +170,7 @@ class SurveyController extends Controller
 
             // Directory settings
             $dir = 'images/';
-            $file = Str()::random() . '.' . $type;
+            $file = Str::random() . '.' . $type;
             $absolutePath = public_path($dir);
             $relativePath = $dir . $file;
 
@@ -195,6 +199,7 @@ class SurveyController extends Controller
                 'required', new Enum(QuestionTypeEnum::class),
             ],
             'description' => 'nullable|string',
+            //present ensures that the field is not null and not an empty string
             'data' => 'present',
             'survey_id' => 'exists:App\Models\Survey,id'
         ]);

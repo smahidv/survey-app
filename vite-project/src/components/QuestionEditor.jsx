@@ -13,6 +13,7 @@ const QuestionEditor = ({
     const [model, setModel] = useState({ ...question });
     const { questionTypes } = userStateContext();
 
+    // everytime the question is updated the questions are updated
     useEffect(() => {
         questionChange(model);
     }, [model]);
@@ -41,7 +42,7 @@ const QuestionEditor = ({
               text-white
               bg-gray-600
               hover:bg-gray-700"
-                            onClick={addQuestion}
+                            onClick={() => addQuestion(index + 1)}
                         >
                             <PlusIcon className="w-4" />
                             add
@@ -111,7 +112,7 @@ const QuestionEditor = ({
                                 <option
                                     value={type}
                                     key={type}
-                                    selected={model.type == type}
+                                    // selected={model.type == type}
                                 >
                                     {upperCaseFirst(type)}
                                 </option>
@@ -132,7 +133,7 @@ const QuestionEditor = ({
                     <textarea
                         name="questionDescription"
                         id="questionDescription"
-                        value={model.description || ""}
+                        value={model.description}
                         onChange={(ev) =>
                             setModel({ ...model, description: ev.target.value })
                         }

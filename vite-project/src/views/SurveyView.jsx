@@ -5,7 +5,9 @@ import { useState } from "react";
 import axiosClient from "./axios";
 import { useNavigate } from "react-router-dom";
 import SurveyQuestions from "../components/SurveyQuestions";
-import { userStateContext } from "../contexts/ContextProvider";
+import { v4 as uuidv4 } from "uuid";
+
+
 
 const SurveyView = () => {
     const navigate = useNavigate();
@@ -19,15 +21,15 @@ const SurveyView = () => {
         expire_date: "",
         questions: [],
     });
-    // const { survey, setsurvey } = userStateContext();
 
-    const [errors, setEroors] = useState({
+    const [errors, setErrors] = useState({
         error_title: "",
         error_expire_date: "",
     });
     const onImageChoose = (ev) => {
         const file = ev.target.files[0];
-        const reader = new FileReader(file);
+        const reader = new FileReader();
+        // The load event is fired when a file has been read successfully.
         reader.onload = () => {
             setsurvey({
                 ...survey,
@@ -58,7 +60,7 @@ const SurveyView = () => {
                     err.response.data &&
                     err.response.data.errors
                 ) {
-                    setEroors({
+                    setErrors({
                         error_title: err.response.data.errors.title,
                         error_expire_date: err.response.data.errors.expire_date,
                     });
@@ -68,12 +70,30 @@ const SurveyView = () => {
                 console.log(err, err.response);
             });
     };
+  
+    const addQuestion = () => {
+        survey.questions.push( {
+            id: uuidv4(),
+            type: "text",
+            question: "",
+            description: "",
+            data: {},
+        });
+        setsurvey({
+            ...survey
+        
+        });
+    };
 
-    function onSurveyUpdate(survey) {
+    function onQuestionsUpdate(questions) {
         setsurvey({
             ...survey,
+            questions,
         });
     }
+
+  
+
 
     return (
         <PageComponent title="Create new Survey">
@@ -238,9 +258,13 @@ const SurveyView = () => {
                         </div>
                         {/*Active*/}
 
+                        {/* <pre>{JSON.stringify(survey.questions, undefined, 2)}</pre> */}
+                        <button type="button" onClick={addQuestion}>
+                            add question
+                        </button>
                         <SurveyQuestions
-                            survey={survey}
-                            onSurveyUpdate={onSurveyUpdate}
+                            questions={survey.questions}
+                            onQuestionsUpdate={onQuestionsUpdate}
                         />
                     </div>
                     <div className="bg-gray-50 px-4 py-3 text-right sm:px-6">
