@@ -9,10 +9,8 @@ const SurveyQuestions = ({ questions, onQuestionsUpdate }) => {
     //{...survey} hold value of the survey(name,title...) from SurveyView.jsx
     const [myQuestions, setMyQuestions] = useState([...questions]);
 
-   
     const addQuestion = (index) => {
- 
-       index = index ?? myQuestions.length;
+        index = index ?? myQuestions.length;
         myQuestions.splice(index, 0, {
             id: uuidv4(),
             type: "text",
@@ -24,8 +22,8 @@ const SurveyQuestions = ({ questions, onQuestionsUpdate }) => {
         onQuestionsUpdate(myQuestions);
     };
 
-//the questions are updated when a question change 
-//the question change when the value of the input changes
+    //the questions are updated when a question change
+    //the question change when the value of the input changes
     const questionChange = (question) => {
         if (!question) return; //return with void
         const newQuestions = myQuestions.map((q) => {
@@ -34,28 +32,24 @@ const SurveyQuestions = ({ questions, onQuestionsUpdate }) => {
             }
             return q;
         });
-        setMyQuestions(
-            newQuestions,
-        );
+        setMyQuestions(newQuestions);
         onQuestionsUpdate(myQuestions);
     };
 
     const deleteQuestion = (question) => {
         const newQuestions = myQuestions.filter((q) => q.id !== question.id);
-        setMyQuestions(
-            newQuestions,
-        );
+        setMyQuestions(newQuestions);
         onQuestionsUpdate(newQuestions);
     };
-
     useEffect(() => {
-        onQuestionsUpdate(myQuestions);
-    }, [questions]);
+        setMyQuestions(questions)
+      }, [questions]);
 
     return (
         <>
             <div className="flex justify-between">
                 <h3 className="text-2xl font-bold">Questions</h3>
+                {/* <pre>{JSON.stringify(myQuestions, undefined, 2)}</pre> */}
                 <button
                     type="button"
                     className="flex items-center text-sm py-1 px-4 rounded-sm text-white bg-gray-600 hover:bg-gray-700"
@@ -68,8 +62,8 @@ const SurveyQuestions = ({ questions, onQuestionsUpdate }) => {
             {myQuestions.length ? (
                 myQuestions.map((q, ind) => (
                     <QuestionEditor
-                        key={q.id}
-                        index={ind}
+                        index={ind} //for map myQuestions[0]
+                        key={q.id} //uuidv4() 
                         question={q}
                         questionChange={questionChange}
                         addQuestion={addQuestion}

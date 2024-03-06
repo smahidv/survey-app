@@ -8,14 +8,15 @@ import DefaultLayout from "./components/DefaultLayout";
 import SurveyView from "./views/SurveyView";
 
 const router = createBrowserRouter([
+
     {
         path: "/",
         element: <DefaultLayout />,
         children: [
-            {
-                path: "/dashboard",
-                element: <Navigate to="/" />,
-            },
+            // {
+            //     path: "/dashboard",
+            //     element: <Navigate to="/" />,
+            // },
             // if a user navigates to "/dashboard," they would be immediately redirected to the root path
             {
                 path: "/",
@@ -29,8 +30,13 @@ const router = createBrowserRouter([
                 path: "/surveys/create",
                 element: <SurveyView />,
             },
+            {
+                path: "/surveys/:id",
+                element: <SurveyView />,
+            },
         ],
     },
+
     {
         path: "/",
         element: <GuestLayout />,

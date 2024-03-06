@@ -49,8 +49,12 @@ class SurveyController extends Controller
 
         //check if image was given and save on local file system
         if (isset($data['image'])) {
-            $relativePath = $this->saveImage($data['image']);
-            $data['image'] = $relativePath;
+
+        
+            // $relativePath = $this->saveImage($data['image']);
+            // $data['image'] = $relativePath;
+            $data['image'] = $this->saveImage($data['image']);
+
         }
 
         $survey = Survey::create($data);
@@ -58,6 +62,8 @@ class SurveyController extends Controller
         foreach ($data['questions'] as $question) {
 // This associates the question with a survey by storing the survey's id in the question
             $question['survey_id'] = $survey->id;
+            //$survey->id refers to the id of the newly created Survey instance
+            // Each question is associated with the survey by setting the survey_id
             $this->createQuestion($question);
         }   
         return new SurveyResource($survey);
@@ -85,8 +91,7 @@ class SurveyController extends Controller
 
         // Check if image was given and save on local file system
         if (isset($data['image'])) {
-            $relativePath = $this->saveImage($data['image']);
-            $data['image'] = $relativePath;
+            $data['image'] = $this->saveImage($data['image']);
 
             // If there is an old image, delete it
             if ($survey->image) {
@@ -146,7 +151,8 @@ class SurveyController extends Controller
 
             // Take out the base64 encoded text without mime type
             //Removes the "data:image/{type};base64," prefix
-            $image = substr($image, strpos($image, '.') + 1);
+            $image = substr($image, strpos($image, ',') + 1);
+            // The + 1 ensures that the comma itself is not included in the substring
 
             // Get file extension (e.g., "jpeg")
             $type = strtolower($type[1]);//$type[0] = $image

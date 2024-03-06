@@ -19,7 +19,6 @@ class SurveyQuestionResource extends JsonResource
             "type"=> $this->type,
             "question"=> $this->question,
             "description"=> $this->description,
-            "questions"=> $this->questions,
             "data"=>JSON_decode($this->data),
             
         ];
