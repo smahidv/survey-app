@@ -16,11 +16,13 @@ const QuestionEditor = ({
     // everytime the question is updated the questions are updated
     useEffect(() => {
         questionChange(model);
+
     }, [model]);
 
     function upperCaseFirst(str) {
         return str.charAt(0).toUpperCase() + str.slice(1);
     }
+ 
     return (
         <>
             <div>
@@ -78,6 +80,9 @@ const QuestionEditor = ({
                             Question
                         </label>
                         <input
+  
+                          
+
                             type="text"
                             name="question"
                             id="question"
@@ -112,7 +117,7 @@ const QuestionEditor = ({
                                 <option
                                     value={type}
                                     key={type}
-                                    // selected={model.type == type}
+                                    selected={model.type == type}
                                 >
                                     {upperCaseFirst(type)}
                                 </option>
@@ -130,15 +135,23 @@ const QuestionEditor = ({
                     >
                         Description
                     </label>
-                    <textarea
+                    <textarea 
+             
                         name="questionDescription"
                         id="questionDescription"
-                        value={model.description}
+                        value={model.description || "" }
                         onChange={(ev) =>
-                            setModel({ ...model, description: ev.target.value })
+                              setModel({ 
+                                ...model, 
+                                description: ev.target.value, 
+                            })
+                          
+                          
                         }
+                       
                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
                     ></textarea>
+                 
                 </div>
                 {/*Description*/}
 

@@ -20,6 +20,7 @@ class Survey extends Model
             ->saveSlugsTo('slug');
     }
 
+    //in Laravel, relationships between Eloquent models are established using methods defined within the models
     public function questions(){
         return $this->hasMany(SurveyQuestion::class);
     }

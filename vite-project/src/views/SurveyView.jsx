@@ -7,8 +7,10 @@ import { useNavigate, useParams } from "react-router-dom";
 import SurveyQuestions from "../components/SurveyQuestions";
 import { v4 as uuidv4 } from "uuid";
 import { useEffect } from "react";
+import { userStateContext } from "../contexts/ContextProvider";
 
 const SurveyView = () => {
+    const { showToast } = userStateContext();
     const navigate = useNavigate();
     const { id } = useParams();
     const [survey, setsurvey] = useState({
@@ -49,33 +51,38 @@ const SurveyView = () => {
             payload.image = payload.image_url;
         }
         delete payload.image_url;
-
+        // -------------------------------------------------
         let res = null;
         if (id) {
-            axiosClient.put("");
+            res = axiosClient.put(`/survey/${id}`, payload);
+        } else {
+            res = axiosClient.post("/survey", payload);
         }
 
-        axiosClient
-            .post("/survey", payload)
-            .then((res) => {
-                navigate("/surveys");
-            })
-            .catch((err) => {
-                if (
-                    err &&
-                    err.response &&
-                    err.response.data &&
-                    err.response.data.errors
-                ) {
-                    setErrors({
-                        error_title: err.response.data.errors.title,
-                        error_expire_date: err.response.data.errors.expire_date,
-                    });
-                } else {
-                    console.error("Unexpected error:", err);
-                }
-                console.log(err, err.response);
-            });
+        res.then((res) => {
+            navigate("/surveys");
+            if(id){
+            showToast(`the survey ${survey.title} was updated`);
+            }else{
+            showToast(`the survey ${survey.title} was created`);
+
+            }
+        }).catch((err) => {
+            if (
+                err &&
+                err.response &&
+                err.response.data &&
+                err.response.data.errors
+            ) {
+                setErrors({
+                    error_title: err.response.data.errors.title,
+                    error_expire_date: err.response.data.errors.expire_date,
+                });
+            } else {
+                console.error("Unexpected error:", err);
+            }
+            console.log(err, err.response);
+        });
     };
 
     const addQuestion = () => {
@@ -92,8 +99,8 @@ const SurveyView = () => {
     };
 
     useEffect(() => {
-        setLoading(true);
         if (id) {
+            setLoading(true);
             axiosClient.get(`/survey/${id}`).then(({ data }) => {
                 setsurvey(data.data);
                 setLoading(false);
@@ -113,8 +120,8 @@ const SurveyView = () => {
             title={!id ? "Create new Survey" : `update ${survey.title} survey`}
         >
             {/* <pre>{ JSON.stringify(survey, undefined, 2) }</pre> */}
-            {/* {loading && <div>loading ...</div>} */}
-            {/* {!loading && ( */}
+            {loading && <div>loading ...</div>}
+            {!loading && (
                 <form action="#" method="POST" onSubmit={onSubmit}>
                     <div className="shadow sm:overflow-hidden sm:rounded-md">
                         <div className="space-y-6 bg-white px-4 py-5 sm:p-6">
@@ -290,7 +297,7 @@ const SurveyView = () => {
                         </div>
                     </div>
                 </form>
-            {/* )} */}
+            )}
         </PageComponent>
     );
 };

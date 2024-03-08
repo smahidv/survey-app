@@ -60,10 +60,12 @@ class SurveyController extends Controller
         $survey = Survey::create($data);
 
         foreach ($data['questions'] as $question) {
+
 // This associates the question with a survey by storing the survey's id in the question
             $question['survey_id'] = $survey->id;
             //$survey->id refers to the id of the newly created Survey instance
             // Each question is associated with the survey by setting the survey_id
+
             $this->createQuestion($question);
         }   
         return new SurveyResource($survey);
@@ -103,22 +105,39 @@ class SurveyController extends Controller
         // Update survey in the database
         $survey->update($data);
 
-        // Get ids as plain array of existing questions
+
+ 
+        //The existing question IDs associated with the survey are retrieved using pluck. 
+        // The new question IDs from the updated data are extracted using Arr::pluck.
+        // 'id' : name of column (primary key of questionSurvey)
         $existingIds = $survey->questions()->pluck('id')->toArray();
-        // Get ids as plain array of new questions
         $newIds = Arr::pluck($data['questions'], 'id');
+
+
+
+
         // Find questions to delete
+        // 'id' values that are in $existingIds but not in $newId
         $toDelete = array_diff($existingIds, $newIds);
+
+
+
         //Find questions to add
         $toAdd = array_diff($newIds, $existingIds);
+        //  'id' values that are in $newIds but not in $existingIds
+
 
         // Delete questions by $toDelete array
         SurveyQuestion::destroy($toDelete);
 
         // Create new questions
         foreach ($data['questions'] as $question) {
+
+            // Create new questions
             if (in_array($question['id'], $toAdd)) {
+
                 $question['survey_id'] = $survey->id;
+                
                 $this->createQuestion($question);
             }
         }
@@ -131,6 +150,7 @@ class SurveyController extends Controller
             }
         }
 
+
         return new SurveyResource($survey);
     }
 
@@ -138,10 +158,25 @@ class SurveyController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Survey $survey, Request $request)
     {
-        //
+        $user = $request->user();
+        if ($user->id !== $survey->user_id) {
+            return abort(403, 'Unauthorized action.');
+        }
+
+        $survey->delete();
+
+        // If there is an old image, delete it
+        if ($survey->image) {
+            $absolutePath = public_path($survey->image);
+            File::delete($absolutePath);
+        }
+
+        return response('', 204);
     }
+
+
 
     private function saveImage(string $image)
     {

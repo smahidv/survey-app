@@ -6,34 +6,41 @@ import { PlusCircleIcon } from "@heroicons/react/24/outline";
 import { useEffect } from "react";
 import axiosClient from "./axios";
 import Pagination from "../components/Pagination";
+import { userStateContext } from "../contexts/ContextProvider";
 
 const Surveys = () => {
+    const { showToast } = userStateContext();
     const [surveys, setSurveys] = useState([]);
     const [meta, setMeta] = useState({});
     const [loading, setLoading] = useState(false);
-    const onDeleteClick = () => {
-        console.log("on delete");
+
+    const onDeleteClick = (id) => {
+        if (window.confirm("are you sure you want to delete this survey ?")) {
+            axiosClient.delete(`/survey/${id}`).then((res) => {
+                getSurveys();
+                // setToast({ message: "test", show: true });
+                showToast('the survey was deleted')
+            });
+        }
     };
 
-    const onPageClick=(link)=>{
+    const onPageClick = (link) => {
         getSurveys(link.url);
-    }
+    };
 
-
-   const getSurveys=(url)=>{
-    url=url || '/survey'
-    setLoading(true);
-    // exemple url: 'http://localhost:8000/api/survey?page=1
-    axiosClient.get(url).then((data) => { 
-        setSurveys(data.data.data);
-        setLoading(false);
-        setMeta(data.data.meta)
-    });
-   }
-
+    const getSurveys = (url) => {
+        url = url || "/survey";
+        setLoading(true);
+        // exemple url: 'http://localhost:8000/api/survey?page=1
+        axiosClient.get(url).then((data) => {
+            setSurveys(data.data.data);
+            setLoading(false);
+            setMeta(data.data.meta);
+        });
+    };
 
     useEffect(() => {
-      getSurveys();
+        getSurveys();
     }, []);
 
     return (
@@ -47,21 +54,27 @@ const Surveys = () => {
             }
         >
             {loading && <div>please wait a moment ...</div>}
-            {!loading &&
-            <div>
-                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
-                    {surveys.map((survey) => (
-                         <SurveyListItem
-                            survey={survey}
-                            key={survey.id}
-                            onDeleteClick={onDeleteClick}
-                        />
-                    ))}
+            {!loading && (
+                <div>
+                    {surveys.length === 0 && (
+                        <div className="py-8 text-center text-grap-700 ">
+                            you don't have surveys created
+                        </div>
+                    )}
+                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-3">
+                        {surveys.map((survey) => (
+                            <SurveyListItem
+                                survey={survey}
+                                key={survey.id}
+                                onDeleteClick={onDeleteClick}
+                            />
+                        ))}
+                    </div>
+                    {surveys.length > 0 && (
+                    <Pagination meta={meta} onPageClick={onPageClick} />)
+}
                 </div>
-           
-                <Pagination meta={meta} onPageClick={onPageClick} />
-            </div>
-             }   
+            )}
         </PageComponent>
     );
 };
