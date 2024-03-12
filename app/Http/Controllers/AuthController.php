@@ -56,6 +56,7 @@ class AuthController extends Controller
     //  This method will return the user(serialized to JSON) object if the request is authenticated, or null otherwise.
    
    }
+   
   public function logout(Request $request)
   {
     /** @var User $user */

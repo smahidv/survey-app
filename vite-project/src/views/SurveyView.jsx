@@ -59,7 +59,7 @@ const SurveyView = () => {
             res = axiosClient.post("/survey", payload);
         }
 
-        res.then((res) => {
+        res.then(() => {
             navigate("/surveys");
             if(id){
             showToast(`the survey ${survey.title} was updated`);
@@ -115,9 +115,32 @@ const SurveyView = () => {
         });
     }
 
+    function onDelete() {
+        if (window.confirm("are you sure you want to delete this survey ?")) {
+            axiosClient.delete(`/survey/${id}`).then((res) => {
+                showToast('the survey was deleted')
+            });
+        }
+        navigate('/surveys')
+    };
+
+
     return (
         <PageComponent
             title={!id ? "Create new Survey" : `update ${survey.title} survey`}
+            
+            buttons={ id && (
+                <div className="flex gap-4">
+                <TButton color="green" href={`/survey/public/${survey.slug}`} >
+                   
+                    public link
+                </TButton>
+                <TButton color="red"  onClick={onDelete}>
+                    delete survey
+                </TButton>
+                </div>
+            )
+            }
         >
             {/* <pre>{ JSON.stringify(survey, undefined, 2) }</pre> */}
             {loading && <div>loading ...</div>}

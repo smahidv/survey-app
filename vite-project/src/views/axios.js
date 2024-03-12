@@ -5,6 +5,11 @@ const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
+    // The Authorization header is used to send the client’s credentials to the server 
+    // when the client is attempting to access a protected resource.
+    //  the server will then verify (token) before returning the requested resource.
+// header : the third parameter to the axios.post() method
+// the  token is added to the request 
     config.headers.Authorization = `Bearer ${localStorage.getItem('TOkEN')}`;
     return config;
 });

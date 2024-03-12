@@ -41,6 +41,7 @@ const SurveyQuestions = ({ questions, onQuestionsUpdate }) => {
         setMyQuestions(newQuestions);
         onQuestionsUpdate(newQuestions);
     };
+    
     useEffect(() => {
         setMyQuestions(questions)
       }, [questions]);
