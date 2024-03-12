@@ -9,6 +9,7 @@ const SurveyPublicView = () => {
     const [loading, setLoading] = useState(false);
     const { slug } = useParams();
     const [surveyFinished, setSurveyFinished] = useState(false);
+    const [isActive, setIsActive] = useState("");
 
     useEffect(() => {
         setLoading(true);
@@ -18,8 +19,11 @@ const SurveyPublicView = () => {
                 setLoading(false);
                 setSurvey(res.data.data);
             })
-            .catch(() => {
-                setLoading(false);
+            .catch((err) => {
+                if (err.response) {
+                    setIsActive(err.response.data);
+                }
+                console.log(err.response.data);
             });
     }, []);
     function answerChanged(question, value) {
@@ -34,15 +38,21 @@ const SurveyPublicView = () => {
             .post(`/survey/${Survey.id}/answer`, {
                 answers,
             })
-            .then((response) => {
-                console.log(response);
+            .then(() => {
                 setSurveyFinished(true);
             });
     }
 
     return (
         <div>
-            {loading && <div className="flex justify-center">Loading...</div>}
+           {isActive && (
+                    <div
+                        className="bg-red-500 rounded py-2 px-3 text-white"
+                       
+                        
+                    >{isActive}</div>
+                )}
+            {loading && !isActive && <div className="flex justify-center">Loading...</div>}
 
             {!loading && (
                 <form

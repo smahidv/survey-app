@@ -274,7 +274,7 @@ public function getBySlug(Survey $survey)
 
 
 if (!$survey->status) {
-    return response("", 404);
+    return response("the surveys is not active", 404);
 }
 
 $currentDate = new \DateTime();
@@ -314,7 +314,7 @@ public function storeAnswer(StoreSurveyAnswerRequest $request, Survey $survey)
         $questionAnswer = SurveyQuestionAnswer::create($data);
     }
 
-    return response($questionAnswer, 201);
+    return response("", 201);
 }
 }
 
