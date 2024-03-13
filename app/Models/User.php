@@ -17,6 +17,9 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    //  A mass-assignment vulnerability occurs when a user passes
+    //  an unexpected HTTP parameter through a request
     protected $fillable = [
         'name',
         'email',
